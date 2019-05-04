@@ -21,11 +21,11 @@ class KCurve():
                                     top=0.96, wspace=None, hspace=0,
                                     height_ratios=[3.5,1])
 
-    def setData(self, stock_obj):
-        self.df = stock_obj.df 
-
     def show(self):
         plt.show()
+
+    def setData(self, stock_df):
+        self.df = stock_df
 
     def candle(self):
         #self.plt_KAV = self.fig.add_subplot(1,1,1)
@@ -79,9 +79,9 @@ class KCurve():
 
 
 if __name__ == '__main__':
-    cvr = KCurve()
     stock = Stock()
     stock.collectData('600797')
+    cvr = KCurve()
     cvr.setData(stock)
     cvr.candle()
     cvr.average()

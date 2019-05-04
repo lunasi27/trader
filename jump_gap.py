@@ -11,8 +11,8 @@ from graph import KCurve
 
 
 class JumpGap():
-    def __init__(self, df_obj):
-        self.stock_df = df_obj
+    def __init__(self, stock_df):
+        self.stock_df = stock_df
 
     def calculate(self):
         jump_df = pd.DataFrame()
@@ -32,34 +32,46 @@ class JumpGap():
         return jump_df
 
 
-class DrawGap(KCurve):
-    def __init__(self):
-        super(drawGap, self).__init__()
+class DrawGap():
+    def __init__(self, graph_obj):
+        self.graph = graph_obj
 
-    def show(self, stock_df, jump_df):
-        self.setData(stock_df)
-        pass
+    def addMark(self, stock_df, jump_df):
+        for idx in np.arange(0, jump_df.shape[0]):
+            today = jump_df.iloc[idx]
+            inday = stock_df.index.get_loc(jump_df.index[idx])
+            if today['jump_power'] > 0:
+                self.graph.plt_KAV.annotate('up',xy=(inday,today.Low*0.95),xytext=(inday, today.Low*0.9),arrowprops=dict(facecolor='red',shrink=0.01),horizontalalignment='left',verticalalignment='top')
+            elif today['jump_power'] < 0:
+                self.graph.plt_KAV.annotate('down',xy=(inday,today.High*1.05),xytext=(inday, today.High*1.1),arrowprops=dict(facecolor='green',shrink=0.01),horizontalalignment='left',verticalalignment='top')
 
 
-class FilterGap(JumpGap, DrawGap):
-    def __init__(self, df_obj, kav_obj):
-        super(FilterGap, self).__init__(df_obj)
-        self.draw_gap = DrawGap()
+
+class FindGap():
+    def __init__(self, stock_obj, graph_obj):
+        self.jump_gap = JumpGap(stock_obj.df)
+        self.draw_gap = DrawGap(graph_obj)
+
+    def calculate(self):
+        selected_gap = self.jump_gap.calculate()
+        selected_gap = selected_gap[(np.abs(selected_gap.changeRatio)>3)&(selected_gap.Volume>selected_gap.Volume.median())]
+        self.gap_df = selected_gap
+        #return selected_gap
+
+    def show(self):
+        print(self.gap_df.filter(['jump_power', 'preClose', 'changeRatio', 'Close', 'Volume']))
+        self.draw_gap.graph.setData(stock_df)
+        self.draw_gap.graph.candle()
+        self.draw_gap.addMark(self.jump_gap.stock_df, self.gap_df)
+        self.draw_gap.graph.show()
         
-
-    def findGap(self):
-        df_gap = self.calculate()
-        df_gap = df_gap[(np.abs(df_gap.changeRatio)>3)&(df_gap.Volume>df_gap.Volume.median())]
-        return df_gap
-
-    def show(self, df):
-        print(df.filter(['jump_power', 'preClose', 'changeRatio', 'Close', 'Volume']))
 
 
 
 if __name__ == '__main__':
-    sd = Stock()
-    sd.collectData('600797')
-    jump_gap_obj = FilterGap(sd.df)
-    gaps = jump_gap_obj.findGap()
-    jump_gap_obj.show(gaps)
+    stock = Stock()
+    stock.collectData('600797')
+    kav = KCurve()
+    jump_gap = FindGap(stock, kav)
+    jump_gap.calculate()
+    jump_gap.show()
