@@ -9,6 +9,7 @@ import matplotlib.gridspec as gridspec
 from data import Stock
 
 
+#plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
@@ -46,9 +47,6 @@ class KCurve():
                               colordown='g')
 
     def average(self):
-        self.df['Ma20'] = self.df.Close.rolling(window=20).mean()
-        self.df['Ma30'] = self.df.Close.rolling(window=30).mean()
-        self.df['Ma60'] = self.df.Close.rolling(window=60).mean()
         numt = np.arange(0, len(self.df.index)) 
         self.plt_KAV.plot(numt, self.df['Ma20'],'black',label='M20',lw=1.0)
         self.plt_KAV.plot(numt, self.df['Ma30'],'green',label='M30',lw=1.0)
@@ -81,8 +79,9 @@ class KCurve():
 if __name__ == '__main__':
     stock = Stock()
     stock.collectData('600797')
+    stock.calculateMA()
     cvr = KCurve()
-    cvr.setData(stock)
+    cvr.setData(stock.df)
     cvr.candle()
     cvr.average()
     cvr.volumn()

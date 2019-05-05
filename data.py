@@ -19,10 +19,15 @@ class Stock():
             end_date = datetime.datetime.now()
         self.df = web.DataReader(stock, self.data_source, begin_date, end_date)
 
+    def calculateMA(self):
+        self.df['Ma20'] = self.df.Close.rolling(window=20).mean()
+        self.df['Ma30'] = self.df.Close.rolling(window=30).mean()
+        self.df['Ma60'] = self.df.Close.rolling(window=60).mean()
+
+
 
 
 if __name__ == '__main__':
     cvr = Stock()
-    start = datetime.datetime(2018,1,1)
-    cvr.collectData('600797', start)
+    cvr.collectData('600797')
     print(cvr.df)
