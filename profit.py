@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class Profit():
+class HoldDuration():
     def __Init__(self):
         pass
 
@@ -47,10 +47,15 @@ class Profit():
         plt.legend(['Close'], loc='best')
         plt.show()
 
+
+class Profit():
+    def __init__(self):
+        
+
             
 
 
 if __name__ == '__main__':
-    prof = Profit()
+    prof = HoldDuration()
     prof.setData('600797')
     prof.show()
