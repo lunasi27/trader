@@ -54,6 +54,7 @@ class Deposit():
             self.stock_df.loc[date, 'Cash'] = cash
             #Refresh current hold positon
             posit_num = self.stock_df.Hold.sum()
+            assert posit_num == 0
             self.stock_df.loc[date, 'MarketCap'] = price * posit_num
         else:
         # Strategy sell
